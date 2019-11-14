@@ -1,0 +1,31 @@
+body{
+	width: 100vw;
+	height: 100vh;
+	display: flex;
+	background-color: #222222; 
+}
+
+.emboss-text{
+	font-style: 180px;
+	font-family: Palatino;
+	letter-spacing: 5px;
+	color: rgb(207, 207, 207);
+	align-items: center;
+	justify-content: center;
+	overflow: hidden;
+	position: absolute;
+  	left: 50%;
+  	top: 50%;
+  	transform: translate(-50%, -50%);
+}
+
+.developers{
+	font-style: 180px;
+	font-family: serif;
+	letter-spacing: 3px;
+	color: rgb(207, 207, 207);
+	position: absolute;
+	left: 50%;
+  	top: 50%;
+  	transform: translate(-50%, 50%);
+}

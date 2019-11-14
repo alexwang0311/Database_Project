@@ -8,12 +8,13 @@ const port = 5000
 var db = mysql.createConnection({
   host: "localhost",
   user: "root",
-  password: "password"
+  password: "password",
+  port: 8889
 })
 
 db.connect(function(err) {
   if (err){
-  	console.log('Error during connection')
+  	console.log('Error during connection: ', err.message)
   	return
   }
   else{
@@ -27,6 +28,10 @@ app.listen(port, () => {
 	console.log('Server running on port: ', port)
 })
 
+app.use( '/' , express.static(path.join(__dirname ,'..' ,'FrontEnd')));
+
+/*
 app.get('/', function(req, res){
-	res.send('Hellow World')
+	res.sendFile(path.join(__dirname, '../FrontEnd/', 'index.html'))
 })
+*/
