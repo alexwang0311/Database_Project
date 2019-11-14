@@ -17,7 +17,7 @@ body{
   	left: 50%;
   	top: 50%;
   	transform: translate(-50%, -50%);
-}
+  }
 
 .developers{
 	font-style: 180px;
@@ -28,4 +28,40 @@ body{
 	left: 50%;
   	top: 50%;
   	transform: translate(-50%, 50%);
+}
+
+button{
+  background-color: #2E2E2E;
+  border: 2px solid #272727;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  font-family: Comic Sans MS;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-150%, 200%);
+}
+
+button.about{
+	position: absolute;
+  	left: 50%;
+  	top: 50%;
+  	transform: translate(-160%, 200%);
+}
+
+button.content{
+	position: absolute;
+  	left: 50%;
+  	top: 50%;
+  	transform: translate(40%, 200%);
+}
+
+button:hover{
+	background-color: #FEFEFE;
+	color: #2E2E2E;
+	cursor: pointer;
 }
