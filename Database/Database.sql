@@ -115,6 +115,19 @@ ON UPDATE CASCADE
 ON DELETE CASCADE
 );
 
+DROP table IF EXISTS weather_info;
+CREATE TABLE IF NOT EXISTS weather_info(
+accident_id BIGINT,
+weather_cd VARCHAR(10),
+weather_desc VARCHAR(255),
+PRIMARY KEY (accident_id),
+CONSTRAINT fk_accident_id
+FOREIGN KEY (accident_id)
+REFERENCES raw_table(my_ID)
+ON UPDATE CASCADE
+ON DELETE CASCADE
+);
+
 
 DROP table IF EXISTS harm_info;
 CREATE TABLE IF NOT EXISTS harm_info(
@@ -140,7 +153,6 @@ RPA VARCHAR(6),
 Precinct VARCHAR(255),
 latitude FLOAT(6,4),
 longitude FLOAT(7,4),
-mapped_location VARCHAR(255),
 PRIMARY KEY (accident_id),
 CONSTRAINT fk_accident_id
 FOREIGN KEY (accident_id)
@@ -170,11 +182,15 @@ INSERT INTO illumination_info
 SELECT DISTINCT my_ID, Illumination_Code, Illumination_Desc
 FROM raw_table;
 
+INSERT INTO weather_info
+SELECT DISTINCT my_ID, Weather_Code, Weather_Desc
+FROM raw_table;
+
 INSERT INTO harm_info
 SELECT DISTINCT my_ID, Harmful_Code, Harmful_Code_Desc
 FROM raw_table;
 
 INSERT INTO location_info
-SELECT DISTINCT my_ID, Street_Address, City, State, ZIP, RPA, Precinct, Latitude, Longitude, Mapped_Location
+SELECT DISTINCT my_ID, Street_Address, City, State, ZIP, RPA, Precinct, Latitude, Longitude
 FROM raw_table WHERE Latitude != '' AND Longitude != '';
 
