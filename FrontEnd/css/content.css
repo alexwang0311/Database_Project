@@ -1,0 +1,32 @@
+#map{
+	height: 600px;
+	width: 800px;
+	border-style: solid;
+	border-width: 5px;
+	border-color: #525252;
+	position: absolute;
+  	top: 60px;
+}
+
+body{
+	width: 100vw;
+	height: 100vh;
+	background-color: #737373; 
+}
+
+select, button{
+  background-color: #2E2E2E;
+  border: 2px solid #272727;
+  color: white;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 11px;
+  font-family: Palatino;
+}
+
+button:hover{
+	background-color: #FEFEFE;
+	color: #2E2E2E;
+	cursor: pointer;
+}
