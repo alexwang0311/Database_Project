@@ -80,6 +80,8 @@
 						data.forEach(function(d){
 							var lat = d.latitude;
 							var lng = d.longitude;
+							var date = d.accident_date;
+							var time = d.accident_time;
 							var detail = d.harm_desc;
 							if(detail == null){
 								console.log('No details available');
@@ -91,7 +93,7 @@
 								title: 'Click to see accident details'
 							});
 							var infoWindow = new google.maps.InfoWindow({
-								content: detail
+								content: 'Date: ' + date.substring(0, 10) + ' Time: ' + time + ' Detail: ' + detail
 							});
 							google.maps.event.addListener(marker, 'click', function(){
 								infoWindow.open(map, marker);
