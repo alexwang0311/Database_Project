@@ -10,6 +10,7 @@ var db = mysql.createConnection({
   user: "root",
   password: "password",
   database: 'project2',
+  multipleStatements: true,
   port: 8889
 });
 
@@ -31,13 +32,13 @@ app.listen(port, () => {
 
 app.use( '/' , express.static(path.join(__dirname ,'..' ,'FrontEnd')));
 
-// Middleware api
-app.get('/api/:date', (req, res) => {
+// Middleware APIs
+// Query middleware
+app.get('/query/:date', (req, res) => {
   var date = JSON.parse(req.params.date);
   var year = date.year;
   var month = date.month;
-  console.log(year, month);
-
+  //console.log(year, month);
   if(month != 0){
     db.query('SELECT * FROM (accident_info INNER JOIN location_info USING (accident_id) INNER JOIN harm_info USING (accident_id)) WHERE YEAR(accident_date) = ' + year + ' AND MONTH(accident_date) = ' + month + ' LIMIT 5000', function(err, result){
       if(err) throw err;
@@ -49,4 +50,18 @@ app.get('/api/:date', (req, res) => {
       res.json(result);
     });
   }
+});
+
+// Stored procedure middleware
+app.get('/procedure/:date', (req, res) => {
+  var date = JSON.parse(req.params.date);
+  var year = date.year;
+  var month = date.month;
+  var procedure = 'CALL filter_time(?,?, @numHitAndRun, @numInjuries, @numDeath); SELECT @numHitAndRun AS numHitAndRun, @numInjuries AS numInjuries, @numDeath AS numDeath;';
+  console.log(year, month);
+
+  db.query(procedure, [year, month], function(err, result){
+    if (err) throw err;
+    res.json(result);
+  });
 });

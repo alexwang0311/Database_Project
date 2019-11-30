@@ -6,6 +6,7 @@
 		<link rel='stylesheet' href='css/content.css'>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 		<script src="markerclusterer.js" type="text/javascript"></script>
+		<script src="d3.js" type="text/javascript"></script>
 	</head>
 	<body>
 		<select id='year'>
@@ -52,6 +53,8 @@
 
 		<button id='choose'>choose</button>
 
+		<text id='stats'>Accident statistics</text>
+
 		<div id="map"></div>
 	    <script>
 	    	var map;
@@ -60,52 +63,64 @@
 		        map = new google.maps.Map(document.getElementById('map'), {
 		          center: {lat: 36.1627, lng: -86.7816},
 		          zoom: 10
-	        });
+	        	});
 
 
-	    	$('#choose').on('click', function(){
-	    		if(markerCluster != null){
-	    			markerCluster.clearMarkers();
-	    		}
-	    		var year = $('#year option:selected').val();
-	    		var month = $('#month option:selected').val();
-	    		var json = JSON.stringify({year: year, month: month});
-	    		//console.log(json);
-				$.ajax({
-					dataType: 'json',
-					type: 'GET',
-					url: '/api/' + json,
-					success: function(data){
-						var markers = [];
-						data.forEach(function(d){
-							var lat = d.latitude;
-							var lng = d.longitude;
-							var date = d.accident_date;
-							var time = d.accident_time;
-							var detail = d.harm_desc;
-							if(detail == null){
-								console.log('No details available');
-								detail = 'No available details for this accident';
-							}
-							var latLng = new google.maps.LatLng(lat, lng);
-							var marker = new google.maps.Marker({
-								position: latLng,
-								title: 'Click to see accident details'
-							});
-							var infoWindow = new google.maps.InfoWindow({
-								content: 'Date: ' + date.substring(0, 10) + ' Time: ' + time + ' Detail: ' + detail
-							});
-							google.maps.event.addListener(marker, 'click', function(){
-								infoWindow.open(map, marker);
-							});
+		    	$('#choose').on('click', function(){
+		    		if(markerCluster != null){
+		    			markerCluster.clearMarkers();
+		    		}
+		    		var year = $('#year option:selected').val();
+		    		var month = $('#month option:selected').val();
+		    		var json = JSON.stringify({year: year, month: month});
+		    		//console.log(json);
+					$.ajax({
+						dataType: 'json',
+						type: 'GET',
+						url: '/query/' + json,
+						success: function(data){
+							var markers = [];
+							data.forEach(function(d){
+								var lat = d.latitude;
+								var lng = d.longitude;
+								var date = d.accident_date;
+								var time = d.accident_time;
+								var detail = d.harm_desc;
+								if(detail == null){
+									console.log('No details available');
+									detail = 'No available details for this accident';
+								}
+								var latLng = new google.maps.LatLng(lat, lng);
+								var marker = new google.maps.Marker({
+									position: latLng,
+									title: 'Click to see accident details'
+								});
+								var infoWindow = new google.maps.InfoWindow({
+									content: 'Date: ' + date.substring(0, 10) + ' Time: ' + time + ' Detail: ' + detail
+								});
+								google.maps.event.addListener(marker, 'click', function(){
+									infoWindow.open(map, marker);
+								});
 
-							markers.push(marker);
-						})
-						markerCluster = new MarkerClusterer(map, markers, {imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'});
-					}
-				});
-			});
-	      }
+								markers.push(marker);
+							})
+							markerCluster = new MarkerClusterer(map, markers, {imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'});
+						}
+					});
+
+					$.ajax({
+						dataType: 'json',
+						type: 'GET',
+						url: '/procedure/' + json,
+						success: function(data){
+							var stats = data[1][0];
+							//console.log(stats);
+							d3.select('#stats')
+								.text('Total hit-and-run: ' + stats.numHitAndRun + ' \nTotal injuries: ' + stats.numInjuries + ' \nTotal deaths: ' + stats.numDeath);
+						}
+					})
+		      	});
+	    	}
 	    </script>
 	    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAaoS7TnPA9RXUXoimCTqxFzXyUyhmD40I&callback=initMap"
 	    async defer></script>
