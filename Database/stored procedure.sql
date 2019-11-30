@@ -23,16 +23,28 @@ month :
 */
 DROP PROCEDURE IF EXISTS filter_time;
 DELIMITER //
-CREATE PROCEDURE filter_time(IN yr INT, IN mon INT, OUT num INT)
+CREATE PROCEDURE filter_time(IN yr INT, IN mon INT, OUT num_hit_and_run INT, OUT num_inj  INT, OUT num_fatal INT)
 BEGIN
 
 IF mon = 0 THEN
-SELECT COUNT(*) FROM accident_info
-WHERE YEAR(accident_date) = yr INTO num;
+SELECT COUNT(*) FROM accident_info INNER JOIN damage_info USING(accident_id)
+WHERE YEAR(accident_date) = yr AND hit_and_run = 'Y' INTO num_hit_and_run;
+
+SELECT SUM(num_injuries) FROM accident_info INNER JOIN damage_info USING(accident_id)
+WHERE YEAR(accident_date) = yr INTO num_inj;
+
+SELECT SUM(num_fatalities) FROM accident_info INNER JOIN damage_info USING(accident_id)
+WHERE YEAR(accident_date) = yr INTO num_fatal;
 
 ELSE
 SELECT COUNT(*) FROM accident_info
-WHERE YEAR(accident_date) = yr AND MONTH(accident_date) = mon INTO num;
+WHERE YEAR(accident_date) = yr AND MONTH(accident_date) = mon AND hit_and_run = 'Y' INTO num_hit_and_run;
+
+SELECT SUM(num_injuries) FROM accident_info INNER JOIN damage_info USING(accident_id)
+WHERE YEAR(accident_date) = yr AND MONTH(accident_date) = mon INTO num_inj;
+
+SELECT SUM(num_fatalities) FROM accident_info INNER JOIN damage_info USING(accident_id)
+WHERE YEAR(accident_date) = yr AND MONTH(accident_date) = mon INTO num_fatal;
 END IF;
 
 END//
