@@ -30,3 +30,7 @@ button:hover{
 	color: #2E2E2E;
 	cursor: pointer;
 }
+
+#stats{
+	font-family: Palatino;
+}
