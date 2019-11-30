@@ -58,7 +58,7 @@ app.get('/procedure/:date', (req, res) => {
   var year = date.year;
   var month = date.month;
   var procedure = 'CALL filter_time(?,?, @numHitAndRun, @numInjuries, @numDeath); SELECT @numHitAndRun AS numHitAndRun, @numInjuries AS numInjuries, @numDeath AS numDeath;';
-  console.log(year, month);
+  //console.log(year, month);
 
   db.query(procedure, [year, month], function(err, result){
     if (err) throw err;
