@@ -1,26 +1,15 @@
 -- Stored procedures
+-- Some useful procedures that are called from the backend
+-- Author: Zhitao Shu
+-- Last changed: 11/30/2019
 
--- 1
+-- filter_time
 -- filter accident records based on year and month (optional)
--- year options:
-/*
-1942
-1956
-1969
-1973
-1975
-1978
-1983
-1989
-1990
-2001
-2006
-2008 - 2019
-
-month :
-0: all months
-1-12 : January - December
-*/
+-- input param @yr: the year to be queried
+-- input param @mon: the month to be queried. 0 represents the whole year
+-- output param @num_hit_and_run: total number of hit and runs of the specified year and month(s)
+-- output param @num_inj: total number of injuries of the specified year and month(s)
+-- output param @num_fatal: total number of fatalities of the specified year and month(s)
 DROP PROCEDURE IF EXISTS filter_time;
 DELIMITER //
 CREATE PROCEDURE filter_time(IN yr INT, IN mon INT, OUT num_hit_and_run INT, OUT num_inj  INT, OUT num_fatal INT)
@@ -51,7 +40,10 @@ END//
 DELIMITER ;
 
 -- 2
--- filter accident records based on city
+-- filter_city
+-- filter accident records based on city name in Davidson County
+-- input param @city_name: the city name to be queried
+-- output param @num: the total number of accidents in that city
 /*
 options: 
 NASHVILLE
@@ -91,11 +83,13 @@ END IF;
 END//
 DELIMITER ;
 
--- 3
+-- filter_damage
 -- filter accident records based on injuries and fatalities
+-- input param @num: the code of different types of situations:
 -- 1: no injuries or fatalities
 -- 2: injuries, no fatalities
 -- 3: fatalities (and injuries)
+-- output param @ cnt: the total number of accidents that meet the conditions
 DROP PROCEDURE IF EXISTS filter_damage;
 DELIMITER //
 CREATE PROCEDURE filter_damage(IN num INT, OUT cnt INT)
@@ -115,8 +109,10 @@ END IF;
 END//
 DELIMITER ;
 
--- 4
+-- filter_weather
 -- filter accident records based on weather conditions
+-- input param @weather: weather description
+-- output param @cnt: total number of accidents under that weather
 /*
 options:
 CLOUDY
