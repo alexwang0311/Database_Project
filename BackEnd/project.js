@@ -40,12 +40,12 @@ app.get('/query/:date', (req, res) => {
   var month = date.month;
   //console.log(year, month);
   if(month != 0){
-    db.query('SELECT * FROM (accident_info INNER JOIN location_info USING (accident_id) INNER JOIN harm_info USING (accident_id)) WHERE YEAR(accident_date) = ' + year + ' AND MONTH(accident_date) = ' + month + ' LIMIT 5000', function(err, result){
+    db.query('SELECT * FROM (accident_info INNER JOIN location_info USING (accident_id) INNER JOIN harm_info USING (accident_id) INNER JOIN weather_info USING (accident_id)) WHERE YEAR(accident_date) = ' + year + ' AND MONTH(accident_date) = ' + month + ' LIMIT 5000', function(err, result){
       if(err) throw err;
       res.json(result);
     });
   }else{
-    db.query('SELECT * FROM (accident_info INNER JOIN location_info USING (accident_id) INNER JOIN harm_info USING (accident_id)) WHERE YEAR(accident_date) = ' + year + ' LIMIT 5000', function(err, result){
+    db.query('SELECT * FROM (accident_info INNER JOIN location_info USING (accident_id) INNER JOIN harm_info USING (accident_id) INNER JOIN weather_info USING (accident_id)) WHERE YEAR(accident_date) = ' + year + ' LIMIT 5000', function(err, result){
       if(err) throw err;
       res.json(result);
     });

@@ -1,6 +1,6 @@
 #map{
 	height: 600px;
-	width: 800px;
+	width: 700px;
 	border-style: solid;
 	border-width: 5px;
 	border-color: #525252;
@@ -33,4 +33,12 @@ button:hover{
 
 #stats{
 	font-family: Palatino;
+}
+
+#bar_graph{
+	position: absolute;
+	left: 720px;
+	top: 70px;
+	height: 620px;
+	width: 580px;
 }

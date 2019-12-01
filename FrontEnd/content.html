@@ -5,8 +5,8 @@
 		<title>Content</title>
 		<link rel='stylesheet' href='css/content.css'>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-		<script src="markerclusterer.js" type="text/javascript"></script>
-		<script src="d3.js" type="text/javascript"></script>
+		<script src="../javascript/markerclusterer.js" type="text/javascript"></script>
+		<script src="../javascript/d3.js" type="text/javascript"></script>
 	</head>
 	<body>
 		<select id='year'>
@@ -21,18 +21,6 @@
 			<option value='2011'>2011</option>
 			<option value='2010'>2010</option>
 			<option value='2009'>2009</option>
-			<option value='2008'>2008</option>
-			<option value='2006'>2006</option>
-			<option value='2001'>2001</option>
-			<option value='1990'>1990</option>
-			<option value='1989'>1989</option>
-			<option value='1983'>1983</option>
-			<option value='1978'>1978</option>
-			<option value='1975'>1975</option>
-			<option value='1973'>1973</option>
-			<option value='1969'>1969</option>
-			<option value='1956'>1956</option>
-			<option value='1942'>1942</option>
 		</select>
 
 		<select id='month'>
@@ -55,10 +43,16 @@
 
 		<text id='stats'>Accident statistics</text>
 
-		<div id="map"></div>
+		<div id='map'></div>
+		<svg id='bar_graph'>
+			<g id='xaxis'></g>
+			<g id='yaxis'></g>
+			<g id='graph'></g>
+		</svg>
 	    <script>
 	    	var map;
 	    	var markerCluster;
+	    	// Set up Google map
 	      	function initMap() {
 		        map = new google.maps.Map(document.getElementById('map'), {
 		          center: {lat: 36.1627, lng: -86.7816},
@@ -80,12 +74,40 @@
 						url: '/query/' + json,
 						success: function(data){
 							var markers = [];
+							// Iteration order:
+							// 0: Clear(weather_cd: 21, 1)
+							// 1: Cloudy(weather_cd: 22, 5, 8, 30)
+							// 2: Rain(weather_cd: 2, 6)
+							// 3: Hail(weather_cd: 3, 7)
+							// 4: Snow(weather_cd: 4, 9, 28)
+							// 5: Unknown(other)
+							var illumination = [0, 0, 0, 0, 0, 0];
 							data.forEach(function(d){
 								var lat = d.latitude;
 								var lng = d.longitude;
 								var date = d.accident_date;
 								var time = d.accident_time;
 								var detail = d.harm_desc;
+								var weather_cd = d.weather_cd;
+								//console.log(weather_cd);
+								if(weather_cd == 21 || weather_cd == 1){
+									illumination[0]++;
+								}
+								else if(weather_cd == 22 || weather_cd == 5 || weather_cd == 8 || weather_cd == 30){
+									illumination[1]++;
+								}
+								else if(weather_cd == 2 || weather_cd == 6){
+									illumination[2]++;
+								}
+								else if(weather_cd == 3 || weather_cd == 7){
+									illumination[3]++;
+								}
+								else if(weather_cd == 4 || weather_cd == 9 || weather_cd == 28){
+									illumination[4]++;
+								}
+								else{
+									illumination[5]++;
+								}
 								if(detail == null){
 									console.log('No details available');
 									detail = 'No available details for this accident';
@@ -105,6 +127,70 @@
 								markers.push(marker);
 							})
 							markerCluster = new MarkerClusterer(map, markers, {imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'});
+
+							console.log(illumination);
+
+							// Set up the bar chart
+							var scaleX = d3.scaleBand()
+											.domain([0, 1, 2, 3, 4, 5])
+											.range([0, 500])
+											.padding(0.25);
+							var axisX = d3.axisBottom(scaleX)
+											.tickFormat(function(d){
+												if(d == 0){
+													return 'Clear';
+												}
+												if(d == 1){
+													return 'Cloudy';
+												}
+												if(d == 2){
+													return 'Rainy';
+												}
+												if(d == 3){
+													return 'Hail';
+												}
+												if(d == 4){
+													return 'Snow';
+												}
+												if(d == 5){
+													return 'Unknown';
+												}
+											});
+							d3.select('#xaxis')
+								.call(axisX)
+								.attr('transform', 'translate(40, 580)');
+
+							var max = d3.max(illumination);
+
+							var scaleY = d3.scaleLinear()
+											.domain([0, max])
+											.range([570, 0]);
+							var axisY = d3.axisLeft(scaleY);
+							d3.select('#yaxis')
+								.call(axisY)
+								.attr('transform', 'translate(40, 10)')
+
+							var selection = d3.select('#graph')
+								.selectAll('#bars')
+								.data(illumination);
+
+							selection.exit()
+										.remove();
+							selection.enter()
+										.append('rect')
+										.attr('id', 'bars')
+										.merge(selection)
+										.attr('x', function(d, index){
+											console.log(index);
+											return 40 + scaleX(index);
+										}).attr('y', function(d){
+											return 10 + scaleY(d);
+										})
+										.attr('width', scaleX.bandwidth())
+										.attr('height', function(d){
+											console.log(d, 570 - scaleY(d));
+											return 570 - scaleY(d);
+										});
 						}
 					});
 
